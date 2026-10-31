@@ -15,7 +15,12 @@ if [[ "$is_colab" == true || "${1:-}" == "--no-venv" ]]; then
     echo "[INFO] This setup does not use .venv; run_xiaomi.sh will ignore invalid venvs."
   fi
   python3 -m pip install -r requirements.txt
-  python3 -m playwright install chromium
+  if [[ "$is_colab" == true ]]; then
+    echo "[INFO] Installing Chromium and Linux dependencies for Colab."
+    python3 -m playwright install --with-deps chromium
+  else
+    python3 -m playwright install chromium
+  fi
 else
   echo "[INFO] Creating the local virtual environment."
   if ! python3 -m venv .venv; then
