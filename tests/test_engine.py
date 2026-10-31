@@ -72,3 +72,28 @@ def test_xss_safe_render(tmp_path):
     assert '</script><script>alert(1)</script>' not in t
     assert '\\u003c/script\\u003e' in t
     assert (tmp_path/'high_priority.txt').exists()
+
+
+def test_screenshots_only_resumes_without_recon(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    import scopeforge
+    rows = [{"host":"dev.mi.com", "root":"mi.com", "url":"https://dev.mi.com/",
+             "status":200, "bucket":"live", "score":35, "priority":"high",
+             "title":"", "tech":[], "sources":["seed"], "reasons":[], "screen":""}]
+    (tmp_path / "results.json").write_text(json.dumps({"meta":{"name":"demo"}, "rows":rows}))
+
+    async def fake_capture(items, scope, output, maximum, workers, timeout):
+        assert len(items) == 1
+        assert items[0]["host"] == "dev.mi.com"
+        items[0]["screen"] = "screenshots/dev.mi.com.webp"
+        return "1 captured, 0 failed"
+
+    monkeypatch.setattr(scopeforge, "capture_screenshots", fake_capture)
+    args=SimpleNamespace(scope=SCOPEFILE, out=tmp_path, screenshots_only=True,
+                         max_screenshots=0, screenshot_workers=3, screenshot_timeout=25)
+    asyncio.run(scopeforge.execute(args))
+    assert (tmp_path / "report.html").is_file()
+    result=json.loads((tmp_path / "results.json").read_text())
+    assert result["rows"][0]["screen"] == "screenshots/dev.mi.com.webp"
+    assert result["meta"]["screenshots"] == "1 captured, 0 failed"
