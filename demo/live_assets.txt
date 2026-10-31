@@ -1,0 +1,13 @@
+jenkins.dev.example.org
+staging-api.example.org
+backup.dev.example.org
+graphql.example.org
+admin.console.example.org
+auth.example.org
+login.demo.test
+legacy.example.org
+preview.demo.test
+docs.example.org
+crm.demo.test
+labs.demo.test
+shop.example.org

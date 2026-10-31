@@ -1,0 +1,569 @@
+{
+  "meta": {
+    "name": "DEMO · Fictional Asset Workspace",
+    "version": "1.0.0",
+    "generated": "2026-10-31T23:32:23+00:00",
+    "scope_file": "fictional_example_scope.csv",
+    "scope_roots": [
+      "example.org",
+      "demo.test"
+    ],
+    "scope_wildcards": 2,
+    "ignored_non_web": 0,
+    "discovered": 241,
+    "probed": 16,
+    "sources": [
+      "crtsh",
+      "otx",
+      "subfinder"
+    ],
+    "health": {
+      "crtsh": {
+        "example.org": {
+          "result": "ok",
+          "returned": 112
+        }
+      },
+      "otx": {
+        "example.org": {
+          "result": "ok",
+          "returned": 28
+        }
+      },
+      "subfinder": {
+        "all": {
+          "result": "ok",
+          "returned": 160
+        }
+      }
+    },
+    "screenshots": "13 fake illustrative placeholders",
+    "passive_only": false,
+    "notice": "FICTIONAL DEMO: hosts, screenshots and findings are illustrative, NOT live test results"
+  },
+  "rows": [
+    {
+      "host": "jenkins.dev.example.org",
+      "root": "example.org",
+      "url": "https://jenkins.dev.example.org/",
+      "status": 403,
+      "bucket": "restricted",
+      "title": "Jenkins",
+      "tech": [
+        {
+          "name": "Jenkins",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 157,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 71,
+      "reasons": [
+        "Non-production environment keyword",
+        "Infrastructure/tooling keyword",
+        "Infrastructure product title",
+        "Access-controlled endpoint"
+      ],
+      "priority": "high",
+      "screen": "screenshots/jenkins_dev_example_org.svg"
+    },
+    {
+      "host": "staging-api.example.org",
+      "root": "example.org",
+      "url": "https://staging-api.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "OpenAPI - Internal API Reference",
+      "tech": [
+        {
+          "name": "Express",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "React",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 118,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 59,
+      "reasons": [
+        "Non-production environment keyword",
+        "API/documentation keyword",
+        "API documentation/console title"
+      ],
+      "priority": "high",
+      "screen": "screenshots/staging-api_example_org.svg"
+    },
+    {
+      "host": "backup.dev.example.org",
+      "root": "example.org",
+      "url": "https://backup.dev.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Storage Console",
+      "tech": [
+        {
+          "name": "Apache",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "PHP",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 274,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 42,
+      "reasons": [
+        "Non-production environment keyword",
+        "Legacy/backup keyword"
+      ],
+      "priority": "high",
+      "screen": "screenshots/backup_dev_example_org.svg"
+    },
+    {
+      "host": "graphql.example.org",
+      "root": "example.org",
+      "url": "https://graphql.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "GraphQL Playground",
+      "tech": [
+        {
+          "name": "Express",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 287,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 41,
+      "reasons": [
+        "API/documentation keyword",
+        "API documentation/console title"
+      ],
+      "priority": "high",
+      "screen": "screenshots/graphql_example_org.svg"
+    },
+    {
+      "host": "admin.console.example.org",
+      "root": "example.org",
+      "url": "https://admin.console.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Control Center | Admin Dashboard",
+      "tech": [
+        {
+          "name": "Next.js",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "React",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "nginx",
+          "version": "1.24.0",
+          "evidence": "Server header (demo)"
+        }
+      ],
+      "headers": {
+        "Server": "nginx/1.24.0"
+      },
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 105,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 36,
+      "reasons": [
+        "Admin/management hostname",
+        "Explicit technology version visible"
+      ],
+      "priority": "high",
+      "screen": "screenshots/admin_console_example_org.svg"
+    },
+    {
+      "host": "auth.example.org",
+      "root": "example.org",
+      "url": "https://auth.example.org/",
+      "status": 401,
+      "bucket": "restricted",
+      "title": "Single Sign-On",
+      "tech": [
+        {
+          "name": "nginx",
+          "version": "1.24.0",
+          "evidence": "Server header (demo)"
+        }
+      ],
+      "headers": {
+        "Server": "nginx/1.24.0"
+      },
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 144,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 35,
+      "reasons": [
+        "Identity/payment-related hostname",
+        "Access-controlled endpoint",
+        "Explicit technology version visible"
+      ],
+      "priority": "high",
+      "screen": "screenshots/auth_example_org.svg"
+    },
+    {
+      "host": "login.demo.test",
+      "root": "demo.test",
+      "url": "https://login.demo.test/",
+      "status": 302,
+      "bucket": "redirect",
+      "title": "Login Portal",
+      "tech": [
+        {
+          "name": "nginx",
+          "version": "1.24.0",
+          "evidence": "Server header (demo)"
+        }
+      ],
+      "headers": {
+        "Server": "nginx/1.24.0"
+      },
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 209,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 28,
+      "reasons": [
+        "Identity/payment-related hostname",
+        "Explicit technology version visible"
+      ],
+      "priority": "medium",
+      "screen": "screenshots/login_demo_test.svg"
+    },
+    {
+      "host": "legacy.example.org",
+      "root": "example.org",
+      "url": "https://legacy.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Legacy Portal",
+      "tech": [
+        {
+          "name": "Apache",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "PHP",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 131,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 24,
+      "reasons": [
+        "Legacy/backup keyword"
+      ],
+      "priority": "medium",
+      "screen": "screenshots/legacy_example_org.svg"
+    },
+    {
+      "host": "preview.demo.test",
+      "root": "demo.test",
+      "url": "https://preview.demo.test/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Release Preview",
+      "tech": [
+        {
+          "name": "Nuxt",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 300,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 23,
+      "reasons": [
+        "Non-production environment keyword"
+      ],
+      "priority": "medium",
+      "screen": "screenshots/preview_demo_test.svg"
+    },
+    {
+      "host": "edge.demo.test",
+      "root": "demo.test",
+      "url": "https://edge.demo.test/",
+      "status": 503,
+      "bucket": "server_error",
+      "title": "Service Unavailable",
+      "tech": [
+        {
+          "name": "nginx",
+          "version": "1.24.0",
+          "evidence": "Server header (demo)"
+        }
+      ],
+      "headers": {
+        "Server": "nginx/1.24.0"
+      },
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 235,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 20,
+      "reasons": [
+        "Server-side error: manual review",
+        "Explicit technology version visible"
+      ],
+      "priority": "medium",
+      "screen": ""
+    },
+    {
+      "host": "docs.example.org",
+      "root": "example.org",
+      "url": "https://docs.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Developer Documentation",
+      "tech": [
+        {
+          "name": "Next.js",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 170,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 17,
+      "reasons": [
+        "API/documentation keyword"
+      ],
+      "priority": "low",
+      "screen": "screenshots/docs_example_org.svg"
+    },
+    {
+      "host": "expired.example.org",
+      "root": "example.org",
+      "url": "",
+      "status": null,
+      "bucket": "unreachable",
+      "title": "",
+      "tech": [],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 248,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 6,
+      "reasons": [
+        "Offline fictional host"
+      ],
+      "priority": "low",
+      "screen": ""
+    },
+    {
+      "host": "crm.demo.test",
+      "root": "demo.test",
+      "url": "https://crm.demo.test/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Customer Relations",
+      "tech": [
+        {
+          "name": "React",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "Cloudflare",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 196,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 5,
+      "reasons": [
+        "No elevated triage indicators"
+      ],
+      "priority": "low",
+      "screen": "screenshots/crm_demo_test.svg"
+    },
+    {
+      "host": "labs.demo.test",
+      "root": "demo.test",
+      "url": "https://labs.demo.test/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Lab Experiment Workspace",
+      "tech": [
+        {
+          "name": "Vue",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 261,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 5,
+      "reasons": [
+        "No elevated triage indicators"
+      ],
+      "priority": "low",
+      "screen": "screenshots/labs_demo_test.svg"
+    },
+    {
+      "host": "shop.example.org",
+      "root": "example.org",
+      "url": "https://shop.example.org/",
+      "status": 200,
+      "bucket": "live",
+      "title": "Shop Collection",
+      "tech": [
+        {
+          "name": "WordPress",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        },
+        {
+          "name": "jQuery",
+          "version": "",
+          "evidence": "Demonstration signature (fictional)"
+        }
+      ],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 183,
+      "sources": [
+        "otx",
+        "crtsh"
+      ],
+      "score": 5,
+      "reasons": [
+        "No elevated triage indicators"
+      ],
+      "priority": "low",
+      "screen": "screenshots/shop_example_org.svg"
+    },
+    {
+      "host": "static.example.org",
+      "root": "example.org",
+      "url": "https://static.example.org/",
+      "status": 404,
+      "bucket": "dead",
+      "title": "",
+      "tech": [],
+      "headers": {},
+      "redirect": "",
+      "external_redirect": false,
+      "error": "",
+      "latency_ms": 222,
+      "sources": [
+        "crtsh",
+        "subfinder"
+      ],
+      "score": 5,
+      "reasons": [
+        "No elevated triage indicators"
+      ],
+      "priority": "low",
+      "screen": ""
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+jenkins.dev.example.org
+staging-api.example.org
+backup.dev.example.org
+graphql.example.org
+admin.console.example.org
+auth.example.org

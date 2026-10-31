@@ -1,0 +1,17 @@
+﻿host,root,url,status,bucket,priority,score,title,tech,versions,sources,reasons,screen
+jenkins.dev.example.org,example.org,https://jenkins.dev.example.org/,403,restricted,high,71,Jenkins,Jenkins,,"otx, crtsh","Non-production environment keyword, Infrastructure/tooling keyword, Infrastructure product title, Access-controlled endpoint",screenshots/jenkins_dev_example_org.svg
+staging-api.example.org,example.org,https://staging-api.example.org/,200,live,high,59,OpenAPI - Internal API Reference,"Express, React",,"crtsh, subfinder","Non-production environment keyword, API/documentation keyword, API documentation/console title",screenshots/staging-api_example_org.svg
+backup.dev.example.org,example.org,https://backup.dev.example.org/,200,live,high,42,Storage Console,"Apache, PHP",,"crtsh, subfinder","Non-production environment keyword, Legacy/backup keyword",screenshots/backup_dev_example_org.svg
+graphql.example.org,example.org,https://graphql.example.org/,200,live,high,41,GraphQL Playground,Express,,"otx, crtsh","API/documentation keyword, API documentation/console title",screenshots/graphql_example_org.svg
+admin.console.example.org,example.org,https://admin.console.example.org/,200,live,high,36,Control Center | Admin Dashboard,"Next.js, React, nginx 1.24.0",nginx 1.24.0,"otx, crtsh","Admin/management hostname, Explicit technology version visible",screenshots/admin_console_example_org.svg
+auth.example.org,example.org,https://auth.example.org/,401,restricted,high,35,Single Sign-On,nginx 1.24.0,nginx 1.24.0,"crtsh, subfinder","Identity/payment-related hostname, Access-controlled endpoint, Explicit technology version visible",screenshots/auth_example_org.svg
+login.demo.test,demo.test,https://login.demo.test/,302,redirect,medium,28,Login Portal,nginx 1.24.0,nginx 1.24.0,"otx, crtsh","Identity/payment-related hostname, Explicit technology version visible",screenshots/login_demo_test.svg
+legacy.example.org,example.org,https://legacy.example.org/,200,live,medium,24,Legacy Portal,"Apache, PHP",,"otx, crtsh",Legacy/backup keyword,screenshots/legacy_example_org.svg
+preview.demo.test,demo.test,https://preview.demo.test/,200,live,medium,23,Release Preview,Nuxt,,"crtsh, subfinder",Non-production environment keyword,screenshots/preview_demo_test.svg
+edge.demo.test,demo.test,https://edge.demo.test/,503,server_error,medium,20,Service Unavailable,nginx 1.24.0,nginx 1.24.0,"otx, crtsh","Server-side error: manual review, Explicit technology version visible",
+docs.example.org,example.org,https://docs.example.org/,200,live,low,17,Developer Documentation,Next.js,,"crtsh, subfinder",API/documentation keyword,screenshots/docs_example_org.svg
+expired.example.org,example.org,,,unreachable,low,6,,,,"crtsh, subfinder",Offline fictional host,
+crm.demo.test,demo.test,https://crm.demo.test/,200,live,low,5,Customer Relations,"React, Cloudflare",,"crtsh, subfinder",No elevated triage indicators,screenshots/crm_demo_test.svg
+labs.demo.test,demo.test,https://labs.demo.test/,200,live,low,5,Lab Experiment Workspace,Vue,,"otx, crtsh",No elevated triage indicators,screenshots/labs_demo_test.svg
+shop.example.org,example.org,https://shop.example.org/,200,live,low,5,Shop Collection,"WordPress, jQuery",,"otx, crtsh",No elevated triage indicators,screenshots/shop_example_org.svg
+static.example.org,example.org,https://static.example.org/,404,dead,low,5,,,,"crtsh, subfinder",No elevated triage indicators,

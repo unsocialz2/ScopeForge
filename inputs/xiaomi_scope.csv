@@ -1,0 +1,128 @@
+identifier,asset_type,instruction,eligible_for_bounty,eligible_for_submission,availability_requirement,confidentiality_requirement,integrity_requirement,max_severity,system_tags,created_at,updated_at
+*.mi.com,WILDCARD,"",true,true,high,high,high,critical,,2019-03-28 09:42:22 UTC,2023-05-15 16:33:22 UTC
+*.xiaomi.com,WILDCARD,"",true,true,high,high,high,critical,,2019-03-28 09:42:42 UTC,2023-05-15 16:33:22 UTC
+Mi/Redmi Phone,HARDWARE,https://www.mi.com/hk/mobile/     ,true,true,low,low,medium,high,,2019-04-01 03:13:19 UTC,2026-03-25 08:18:08 UTC
+Mi Band,HARDWARE,https://www.mi.com/hk/wearables/,true,true,low,low,medium,high,,2019-04-01 03:14:46 UTC,2026-03-25 07:58:43 UTC
+Mi Home Webcam ,HARDWARE,"https://www.mi.com/us/mi-home-security-camera/ , https://www.mi.com/in/camera-360/",true,true,low,low,medium,high,,2019-04-01 03:15:22 UTC,2020-05-19 09:02:59 UTC
+Mi Robot Vacuum,HARDWARE, https://www.mi.com/hk/mi-robot-vacuum/ ,true,true,low,low,medium,high,,2019-04-01 03:16:16 UTC,2020-05-19 09:02:59 UTC
+Mi TV Box,HARDWARE,https://www.mi.com/us/mi-box-s/,true,true,low,low,medium,high,,2019-04-01 03:16:55 UTC,2020-05-19 09:02:59 UTC
+Mi Laser Projector,HARDWARE,https://www.mi.com/us/mi-laser-projector-150/,true,true,low,low,medium,high,,2019-04-01 03:17:25 UTC,2020-05-19 09:02:59 UTC
+Mi TV ,HARDWARE,https://www.mi.com/in/product-list/tv/,true,true,low,low,medium,high,,2019-04-01 03:17:46 UTC,2026-03-25 08:14:28 UTC
+Mi Electric Scooter ,HARDWARE,https://www.mi.com/us/mi-electric-scooter/,true,true,low,low,medium,high,,2019-04-01 03:18:06 UTC,2020-05-19 09:02:59 UTC
+com.miui.micloudsync,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:04:51 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.smarthome,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:05:46 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.market,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:06:18 UTC,2020-05-19 09:02:59 UTC
+com.mi.global.shop,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:06:40 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.mibrain.speech,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:07:03 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.account,OTHER_APK,"",true,true,high,high,high,critical,,2019-04-01 04:07:28 UTC,2020-05-19 09:02:59 UTC
+*.miui.com,WILDCARD,"",true,true,medium,medium,medium,critical,,2020-03-13 10:34:10 UTC,2023-05-15 16:35:15 UTC
+*.xiaomiyoupin.com,WILDCARD,"",true,true,,,,critical,,2020-03-13 10:34:29 UTC,2023-05-15 16:35:16 UTC
+*.miwifi.com,WILDCARD,"",true,true,medium,medium,medium,critical,,2020-03-13 10:34:59 UTC,2023-05-15 16:35:16 UTC
+com.xiaomi.payment,OTHER_APK,"",true,true,,high,,critical,,2020-05-19 05:50:18 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.mipicks,OTHER_APK,"",true,true,,high,,critical,,2020-05-19 05:51:02 UTC,2020-05-19 09:02:59 UTC
+com.xiaomi.micloud.sdk,OTHER_APK,"",true,true,high,high,high,critical,,2020-05-19 05:55:19 UTC,2020-05-19 09:02:59 UTC
+com.miui.cloudbackup,OTHER_APK,"",true,true,high,high,high,critical,,2020-05-19 05:55:50 UTC,2020-05-19 09:02:59 UTC
+com.miui.cloudservice,OTHER_APK,"",true,true,high,high,high,critical,,2020-05-19 05:59:33 UTC,2020-05-19 09:02:59 UTC
+com.android.browser,OTHER_APK,"",true,true,medium,low,low,high,,2020-05-19 08:17:15 UTC,2021-04-06 03:56:06 UTC
+Other APK Assets,OTHER,"com.miui.screenrecorder
+com.android.providers.telephony
+com.android.dynsystem
+com.miui.powerkeeper
+com.xiaomi.miplay_client
+com.milink.service
+com.xiaomi.mi_connect_service
+com.android.updater
+com.miui.securityadd
+com.miui.gallery
+com.android.mms.service
+com.miui.msa.global
+com.android.browser
+com.miui.videoplayer
+com.android.soundrecorder
+com.miui.backup
+com.miui.notification
+com.android.certinstaller
+com.miui.huanji
+com.miui.hybrid
+com.miui.vsimcore
+com.miui.securitycore
+com.mi.health
+com.xiaomi.simactivate.service
+com.miui.phrase
+com.miui.player
+com.miui.miservice
+com.android.provision
+com.miui.system
+com.miui.global.packageinstaller
+com.miui.compass
+com.miui.cit
+com.miui.android.fashiongallery
+com.miui.bugreport
+com.android.fileexplorer
+com.android.camera
+com.xiaomi.glgm
+com.xiaomi.xmsf
+com.miui.mishare.connectivity
+com.miui.freeform
+com.xiaomi.finddevice
+com.mi.global.bbs
+com.xiaomi.joyose
+com.mi.android.globalFileexplorer
+com.miui.notes
+com.miui.wmsvc
+com.xiaomi.midrop
+com.miui.touchassistant
+com.miui.miwallpaper
+com.xiaomi.bluetooth
+com.miui.cleanmaster
+com.miui.analytics
+com.android.settings
+com.xiaomi.scanner
+com.android.phone
+com.android.deskclock
+com.android.systemui
+com.xiaomi.discover
+com.android.thememanager
+com.android.bluetooth
+com.miui.face
+com.miui.home",true,true,medium,low,low,high,,2020-05-19 08:30:55 UTC,2026-03-25 08:20:13 UTC
+Other Hardware Assets,OTHER,Accepted ranges of hardware in Xiaomi’s Program include Xiaomi and Mijia products  ( these are for assets that are not specified in  the Hardware/IoT  scope list ),true,true,high,high,high,critical,,2020-05-19 08:52:59 UTC,2020-05-19 09:02:59 UTC
+MIUI OS for Xiaomi Phone,OTHER,"MIUI is Xiaomi's phone operating system (OS), customized on stock Android. The scope includes pre-installed apps signed with a Xiaomi certification.",true,true,high,high,high,critical,,2020-05-20 12:25:34 UTC,2026-03-25 08:11:57 UTC
+*.airstar-finance.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.airstar.com,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.airstarfinance.net,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.aleenote.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.aleenote.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.baoliyun.com,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.duokan.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.hongyuanib.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mi.cn,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mifile.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.migames.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.miinsurtech.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.miinsurtech.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.miinsurtech.net,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mijiayoupin.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mioffice.cn,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mios.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.miot-spec.org,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mipay.com,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.mipay.net,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.miui.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.oktukids.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.openvela.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.wali.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiangkankeji.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiangkankeji.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiangkannews.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomi.net,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomi.org,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomiev.com,WILDCARD,,true,true,high,high,high,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomimobile.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomiprint.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomiwear.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xunkid.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xunkids.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.youpin.cn,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.zmifi.com,WILDCARD,,true,true,medium,medium,medium,critical,,2026-03-25 07:28:23 UTC,2026-03-25 07:28:23 UTC
+*.xiaomimimo.com,WILDCARD,,true,true,high,high,high,critical,,2026-03-26 02:56:19 UTC,2026-06-22 02:05:00 UTC
