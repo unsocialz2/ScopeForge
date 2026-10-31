@@ -16,6 +16,19 @@ python -m playwright install chromium
 
 If Chromium reports missing Linux libraries, run `python -m playwright install --with-deps chromium` on a system where you can install packages. `subfinder` is **optional**; install from [ProjectDiscovery](https://github.com/projectdiscovery/subfinder) to improve free coverage. Without subfinder, the tool still uses public sources `crt.sh` and AlienVault OTX. These may impose rate limits/outages. Wayback is opt-in.
 
+## Google Colab / hosted notebook
+
+In Colab, install into the notebook's Python instead of creating a virtual environment:
+
+```bash
+cd /content/ScopeForge
+git pull
+./setup.sh
+./run_xiaomi.sh passive
+```
+
+`setup.sh` detects Colab and skips `venv`, which may fail with `ensurepip` in managed notebook images. If Colab is not detected, run `./setup.sh --no-venv`. A partial `.venv` from an earlier failed installation is ignored by `run_xiaomi.sh`.
+
 ## Run your uploaded Xiaomi scope
 
 **First: discovery only (no direct traffic to Xiaomi hosts):**
