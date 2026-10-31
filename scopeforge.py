@@ -451,57 +451,122 @@ async def probe_host(client: httpx.AsyncClient, scope: Scope, host: str, sem: as
 
 
 async def capture_screenshots(rows: list[dict], scope: Scope, output: Path, max_screenshots: int, screenshot_workers: int, screenshot_timeout: int) -> str:
+    """Capture web previews; retry Chromium flavors, save logs, resume existing images."""
     try:
         from playwright.async_api import async_playwright
     except ImportError:
-        return "Playwright Python package missing; screenshots skipped"
-    eligible = [x for x in rows if x.get("url") and x["bucket"] in ("live", "restricted", "client_error", "redirect") and not x.get("external_redirect")]
-    eligible.sort(key=lambda x: (-x["score"], x["host"]))
+        return "Playwright package missing; install playwright"
+
+    eligible = [r for r in rows if r.get("url") and r.get("bucket") in
+                ("live", "restricted", "client_error", "redirect")
+                and not r.get("external_redirect")
+                and scope.includes(urlsplit(r["url"]).hostname or "")]
+    eligible.sort(key=lambda r: (-r.get("score", 0), r["host"]))
     if max_screenshots > 0:
         eligible = eligible[:max_screenshots]
     if not eligible:
         return "No screenshot-eligible hosts"
-    (output / "screenshots").mkdir(parents=True, exist_ok=True)
-    sem = asyncio.Semaphore(max(1, screenshot_workers))
-    successes, errors = 0, 0
-    async with async_playwright() as p:
-        try:
-            browser = await p.chromium.launch(headless=True, args=["--no-sandbox"])
-        except Exception as exc:
-            return f"Chromium unavailable; run 'python -m playwright install chromium': {str(exc)[:150]}"
 
-        async def one(r: dict):
-            nonlocal successes, errors
-            async with sem:
-                page = await browser.new_page(viewport={"width": 1365, "height": 810}, device_scale_factor=1)
-                # Navigation only to user-supplied in-scope hosts. No off-scope redirect follows.
-                async def guard(route):
-                    req = route.request
-                    if req.is_navigation_request() and req.frame == page.main_frame:
-                        u = urlsplit(req.url)
-                        if not scope.includes(u.hostname or "") or u.scheme not in ("http", "https"):
-                            return await route.abort()
-                    return await route.continue_()
+    image_dir = output / "screenshots"
+    image_dir.mkdir(parents=True, exist_ok=True)
+    candidates = [
+        ("new-headless Chromium", {"channel": "chromium", "headless": True,
+                                    "args": ["--no-sandbox", "--disable-dev-shm-usage"]}),
+        ("Chromium headless shell", {"headless": True,
+                                     "args": ["--no-sandbox", "--disable-dev-shm-usage"]}),
+    ]
+    launch_errors = []
+    sem = asyncio.Semaphore(max(1, screenshot_workers))
+    captured = failed = reused = 0
+    async with async_playwright() as playwright:
+        browser = None
+        selected = ""
+        for name, options in candidates:
+            probe_browser = None
+            try:
+                probe_browser = await playwright.chromium.launch(**options)
+                # Some hosted runtimes launch a browser and immediately crash.
+                check_page = await probe_browser.new_page()
                 try:
-                    await page.route("**/*", guard)
-                    await page.goto(r["url"], wait_until="domcontentloaded", timeout=screenshot_timeout * 1000)
-                    final_url = urlsplit(page.url)
-                    if not scope.includes(final_url.hostname or ""):
-                        raise ValueError("Screenshot redirect left the supplied scope")
-                    digest = hashlib.sha256(r["host"].encode()).hexdigest()[:8]
-                    filename = re.sub(r"[^a-z0-9._-]", "_", r["host"])[:110] + "_" + digest + ".webp"
-                    path = output / "screenshots" / filename
-                    await page.screenshot(path=str(path), type="webp", quality=72, animations="disabled", full_page=False, timeout=12000)
-                    r["screen"] = f"screenshots/{filename}"
-                    successes += 1
-                except Exception as exc:
-                    r["screenshot_error"] = f"{type(exc).__name__}: {str(exc)[:110]}"
-                    errors += 1
+                    await check_page.goto("data:text/html,<title>ScopeForge check</title>", timeout=10000)
+                    await check_page.screenshot(timeout=10000)
                 finally:
-                    await page.close()
-        await asyncio.gather(*(one(row) for row in eligible))
-        await browser.close()
-    return f"{successes} captured, {errors} failed, {len(eligible)} attempted"
+                    await check_page.close()
+                browser = probe_browser
+                selected = name
+                break
+            except Exception as exc:
+                launch_errors.append(f"[{name}] {type(exc).__name__}: {exc}")
+                if probe_browser is not None:
+                    try:
+                        await probe_browser.close()
+                    except Exception:
+                        pass
+
+        if browser is None:
+            logfile = image_dir / "browser_launch_error.log"
+            logfile.write_text("\n\n".join(launch_errors), encoding="utf-8")
+            return ("Chromium could not start; full diagnostic saved to "
+                    f"{logfile}. Run: python3 -m playwright install --with-deps chromium")
+
+        async def capture_one(row):
+            nonlocal captured, failed, reused
+            digest = hashlib.sha256(row["host"].encode()).hexdigest()[:8]
+            name = re.sub(r"[^a-z0-9._-]", "_", row["host"])[:110]
+            filename = f"{name}_{digest}.webp"
+            target = image_dir / filename
+            if target.is_file() and target.stat().st_size > 0:
+                row["screen"] = f"screenshots/{filename}"
+                row.pop("screenshot_error", None)
+                reused += 1
+                return
+
+            async with sem:
+                page = None
+                try:
+                    page = await browser.new_page(viewport={"width": 1365, "height": 810},
+                                                  device_scale_factor=1, ignore_https_errors=False)
+
+                    async def guard(route):
+                        request = route.request
+                        if request.is_navigation_request() and request.frame == page.main_frame:
+                            parsed = urlsplit(request.url)
+                            if parsed.scheme not in ("http", "https") or not scope.includes(parsed.hostname or ""):
+                                return await route.abort()
+                        return await route.continue_()
+
+                    await page.route("**/*", guard)
+                    await page.goto(row["url"], wait_until="domcontentloaded",
+                                    timeout=screenshot_timeout * 1000)
+                    final = urlsplit(page.url)
+                    if final.scheme not in ("http", "https") or not scope.includes(final.hostname or ""):
+                        raise ValueError("Browser navigation left authorized scope")
+                    await page.screenshot(path=str(target), type="webp", quality=72,
+                                          animations="disabled", full_page=False,
+                                          timeout=max(12000, screenshot_timeout * 1000))
+                    row["screen"] = f"screenshots/{filename}"
+                    row.pop("screenshot_error", None)
+                    captured += 1
+                except Exception as exc:
+                    row["screenshot_error"] = f"{type(exc).__name__}: {str(exc)[:350]}"
+                    failed += 1
+                finally:
+                    if page is not None:
+                        try:
+                            await page.close()
+                        except Exception:
+                            pass
+
+        try:
+            await asyncio.gather(*(capture_one(row) for row in eligible))
+        finally:
+            try:
+                await browser.close()
+            except Exception:
+                pass
+
+    return (f"{captured} captured, {reused} reused, {failed} failed, "
+            f"{len(eligible)} eligible; engine={selected}")
 
 
 def render_report(results: list[dict], meta: dict, output: Path) -> None:
@@ -536,6 +601,22 @@ def render_report(results: list[dict], meta: dict, output: Path) -> None:
 async def execute(args):
     scope = Scope.from_csv(args.scope)
     print(f"[scope] {len(scope.wildcards)} wildcard roots, {len(scope.exact)} exact web assets, {len(scope.ignored)} non-web ignored")
+    if args.screenshots_only:
+        previous = args.out / "results.json"
+        if not previous.is_file():
+            raise ValueError(f"No previous scan results at {previous}; run active mode first")
+        payload = json.loads(previous.read_text(encoding="utf-8"))
+        rows = [r for r in payload["rows"] if scope.includes(r["host"])]
+        print(f"[screenshots] reusing {len(rows)} previously probed in-scope assets (no discovery/probing)")
+        shots = await capture_screenshots(rows, scope, args.out, args.max_screenshots,
+                                           args.screenshot_workers, args.screenshot_timeout)
+        metadata = payload["meta"]
+        metadata["screenshots"] = shots
+        metadata["generated"] = stamp()
+        render_report(rows, metadata, args.out)
+        print("[screenshots]", shots)
+        print(f"[complete] {args.out/'report.html'}")
+        return
     sources = {x.strip() for x in args.sources.split(",") if x.strip()}
     invalid = sources - {"crtsh", "otx", "subfinder", "wayback"}
     if invalid:
@@ -593,16 +674,19 @@ def get_args():
     parser.add_argument("--sources", default="crtsh,otx,subfinder", help="Comma list of: crtsh,otx,subfinder,wayback")
     parser.add_argument("--seeds", type=Path, help="Optional additional user-collected host/URL list; always scope-filtered")
     parser.add_argument("--source-workers", type=int, default=4, help="Parallel passive-source requests")
-    parser.add_argument("--workers", type=int, default=6, help="Parallel HTTP probes (bounded)")
+    parser.add_argument("--workers", type=int, default=20, help="Parallel HTTP probes (bounded)")
     parser.add_argument("--timeout", type=int, default=10, help="HTTP timeout per request")
-    parser.add_argument("--max-hosts", type=int, default=500, help="Max hosts actively probed; 0 = no cap")
-    parser.add_argument("--max-screenshots", type=int, default=150, help="Max screenshots; 0 = all eligible")
-    parser.add_argument("--screenshot-workers", type=int, default=2, help="Concurrent Chromium pages")
-    parser.add_argument("--screenshot-timeout", type=int, default=15, help="Browser navigation timeout per host")
+    parser.add_argument("--max-hosts", type=int, default=0, help="Max hosts actively probed; 0 = no cap")
+    parser.add_argument("--max-screenshots", type=int, default=0, help="Max screenshots; 0 = all eligible")
+    parser.add_argument("--screenshot-workers", type=int, default=3, help="Concurrent Chromium pages")
+    parser.add_argument("--screenshot-timeout", type=int, default=25, help="Browser navigation timeout per host")
     parser.add_argument("--passive-only", action="store_true", help="No requests to target hosts, no screenshots")
+    parser.add_argument("--screenshots-only", action="store_true", help="Resume from existing results.json; no discovery/probes")
     parser.add_argument("--no-screenshots", dest="screenshots", action="store_false", help="Skip Chromium screenshots")
     parser.add_argument("--authorized", action="store_true", help="Acknowledge authorization for active probing of supplied scope")
     args = parser.parse_args()
+    if args.screenshots_only and args.passive_only:
+        parser.error("--screenshots-only and --passive-only cannot be combined")
     if not args.passive_only and not args.authorized:
         parser.error("Active HTTP probing requires --authorized (or choose --passive-only)")
     for attr in ("workers", "source_workers", "screenshot_workers", "timeout", "screenshot_timeout"):
