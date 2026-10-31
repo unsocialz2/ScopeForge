@@ -29,6 +29,39 @@ git pull
 
 `setup.sh` detects Colab and skips `venv`, which may fail with `ensurepip` in managed notebook images. If Colab is not detected, run `./setup.sh --no-venv`. A partial `.venv` from an earlier failed installation is ignored by `run_xiaomi.sh`.
 
+## Chromium screenshot recovery on Google Colab
+
+If the log shows "Target page, context or browser has been closed" on
+Chromium launch, install Linux dependencies and resume **without repeating recon**:
+
+```bash
+cd /content/ScopeForge
+git pull origin main
+python3 -m playwright install --with-deps chromium
+./run_xiaomi.sh screenshots
+```
+
+The screenshot-only mode reloads `results/xiaomi/results.json`, revalidates
+hostnames against the current scope, reuses already captured images, and
+regenerates `results/xiaomi/report.html`. If neither Chromium
+channel launches, read the full diagnostic at
+`results/xiaomi/screenshots/browser_launch_error.log`.
+
+A fresh full run uses these default limits:
+
+```bash
+RECON_WORKERS=20 SCREENSHOT_WORKERS=3 MAX_HOSTS=0 MAX_SCREENSHOTS=0 ./run_xiaomi.sh active
+```
+
+- `RECON_WORKERS`: concurrent HTTP probes (20 by default).
+- `SCREENSHOT_WORKERS`: concurrent Chromium pages (3 by default; browsers use more RAM).
+- `MAX_HOSTS=0`: all **discovered, in-scope** hosts, not every possible DNS name.
+- `MAX_SCREENSHOTS=0`: all eligible probed hosts.
+- `SOURCE_WORKERS` and `SCREENSHOT_TIMEOUT` can also be set via environment variables.
+
+Keep concurrency within the target program's authorized rate limits. Run active and
+screenshot modes only against currently authorized assets.
+
 ## Run your uploaded Xiaomi scope
 
 **First: discovery only (no direct traffic to Xiaomi hosts):**
