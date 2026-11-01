@@ -42,5 +42,8 @@ case "$mode" in
       --authorized --screenshots-only --max-screenshots "$MAX_SCREENSHOTS" \
       --screenshot-workers "$SCREENSHOT_WORKERS" --screenshot-timeout "$SCREENSHOT_TIMEOUT"
     ;;
-  *) echo "Usage: $0 [passive|active|screenshots]" >&2; exit 2;;
+  diagnose)
+    python3 scripts/diagnose.py results/xiaomi/results.json
+    ;;
+  *) echo "Usage: $0 [passive|active|screenshots|diagnose]" >&2; exit 2;;
 esac
