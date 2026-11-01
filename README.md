@@ -62,6 +62,30 @@ RECON_WORKERS=20 SCREENSHOT_WORKERS=3 MAX_HOSTS=0 MAX_SCREENSHOTS=0 ./run_xiaomi
 Keep concurrency within the target program's authorized rate limits. Run active and
 screenshot modes only against currently authorized assets.
 
+## Discovery diagnostics and retry (Colab)
+
+If a fresh run finds far fewer subdomains than a previous run, it may be a failed passive source, **not** a smaller attack surface. Inspect the previous report without making requests:
+
+```bash
+git pull origin main
+./run_xiaomi.sh diagnose
+```
+
+The command prints source successes, returned raw names, and errors per provider. Current versions retry temporary HTTP 429 / 5xx and network timeouts, record source failures, and merge previous `results/xiaomi/discovered.txt` on subsequent runs (scope-checked). This works only while that file is retained: deleting `results/` deletes the local discovery history.
+
+On Google Colab, `./setup.sh --no-venv` also attempts to install the official, SHA256-verified Subfinder v2.17.0 binary under `.tools/`. An optional Subfinder installation failure is non-fatal, but is shown as a warning. Source coverage can still vary.
+
+```bash
+./setup.sh --no-venv
+RECON_WORKERS=20 MAX_HOSTS=0 MAX_SCREENSHOTS=0 ./run_xiaomi.sh active
+```
+
+Only run active probing within current scope, permission, and rate limits. Higher HTTP concurrency does not fix public-source failures. To opt into the slower Wayback provider:
+
+```bash
+DISCOVERY_SOURCES=crtsh,otx,subfinder,wayback ./run_xiaomi.sh passive
+```
+
 ## Run your uploaded Xiaomi scope
 
 **First: discovery only (no direct traffic to Xiaomi hosts):**
