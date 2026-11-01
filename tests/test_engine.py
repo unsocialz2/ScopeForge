@@ -97,3 +97,54 @@ def test_screenshots_only_resumes_without_recon(tmp_path, monkeypatch):
     result=json.loads((tmp_path / "results.json").read_text())
     assert result["rows"][0]["screen"] == "screenshots/dev.mi.com.webp"
     assert result["meta"]["screenshots"] == "1 captured, 0 failed"
+
+
+def test_source_retry_on_transient_server_error(monkeypatch):
+    import scopeforge
+    calls=[]
+    def handler(req):
+        calls.append(str(req.url))
+        return httpx.Response(503 if len(calls) == 1 else 200, json=[{"name_value":"test.mi.com"}])
+    async def fake_sleep(_):
+        return None
+    monkeypatch.setattr(scopeforge.asyncio, "sleep", fake_sleep)
+    async def go():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as cli:
+            return await scopeforge.source_request(cli, "https://example.test", retries=2)
+    res=asyncio.run(go())
+    assert res.status_code == 200 and len(calls) == 2
+
+
+def test_source_permanent_4xx_is_not_retried():
+    import scopeforge
+    calls=[]
+    def handler(req):
+        calls.append(1)
+        return httpx.Response(404)
+    async def go():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as cli:
+            try:
+                await scopeforge.source_request(cli, "https://example.test", retries=2)
+            except httpx.HTTPStatusError:
+                return
+            assert False, "Expected HTTP status error"
+    asyncio.run(go())
+    assert len(calls) == 1
+
+
+def test_subfinder_domain_list_is_separate_file(monkeypatch):
+    import scopeforge
+    import shutil
+    monkeypatch.setattr(shutil, "which", lambda x: "/usr/bin/subfinder")
+    class DummyProcess:
+        returncode = 0
+        async def communicate(self):
+            return b"host.mi.com\n", b""
+    async def fake_create(*argv, **kwargs):
+        assert argv[0] == "subfinder"
+        assert argv[2] == "-dL"
+        assert Path(argv[3]).read_text() == "mi.com\nxiaomi.com\n"
+        return DummyProcess()
+    monkeypatch.setattr(scopeforge.asyncio, "create_subprocess_exec", fake_create)
+    result, health = asyncio.run(scopeforge.run_subfinder(["mi.com", "xiaomi.com"]))
+    assert result == {"host.mi.com"} and health == "ok"
