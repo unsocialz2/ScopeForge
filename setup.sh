@@ -39,4 +39,13 @@ EOF
   .venv/bin/python -m playwright install chromium
 fi
 
+# On Colab, add the official passive Subfinder binary where possible.
+# Failure is not fatal: crt.sh and OTX still work without it.
+if [[ "$is_colab" == true ]]; then
+  echo "[INFO] Checking optional Subfinder passive discovery tool."
+  if ! bash scripts/install_subfinder.sh; then
+    echo "[WARN] Subfinder install failed; passive discovery will use available public sources." >&2
+  fi
+fi
+
 printf '\n[READY] Run: ./run_xiaomi.sh passive\nOr, after rechecking authorization: ./run_xiaomi.sh active\n'
