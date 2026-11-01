@@ -20,6 +20,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -135,11 +136,31 @@ def extract_crt_names(payload) -> set[str]:
     return names
 
 
+async def source_request(client: httpx.AsyncClient, url: str, *, params=None, timeout=25, retries=2) -> httpx.Response:
+    """Retry transient public data-source failures without retrying permanent 4xx responses."""
+    for attempt in range(retries + 1):
+        try:
+            response = await client.get(url, params=params, timeout=timeout)
+            response.raise_for_status()
+            return response
+        except (httpx.TimeoutException, httpx.NetworkError, httpx.HTTPStatusError) as exc:
+            status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None
+            if attempt >= retries or (status is not None and status not in (429, 500, 502, 503, 504)):
+                raise
+            delay = min(8, 2 ** attempt)
+            if isinstance(exc, httpx.HTTPStatusError):
+                try:
+                    delay = max(delay, min(15, int(exc.response.headers.get("retry-after", "0"))))
+                except ValueError:
+                    pass
+            await asyncio.sleep(delay)
+    raise RuntimeError("unreachable retry state")
+
+
 async def gather_crt(client: httpx.AsyncClient, domain: str, sem: asyncio.Semaphore) -> tuple[str, set[str], str]:
     async with sem:
         try:
-            r = await client.get("https://crt.sh/", params={"q": f"%.{domain}", "output": "json"}, timeout=25)
-            r.raise_for_status()
+            r = await source_request(client, "https://crt.sh/", params={"q": f"%.{domain}", "output": "json"}, timeout=25)
             return domain, extract_crt_names(r.json()), "ok"
         except Exception as exc:
             return domain, set(), f"{type(exc).__name__}: {str(exc)[:100]}"
@@ -148,8 +169,7 @@ async def gather_crt(client: httpx.AsyncClient, domain: str, sem: asyncio.Semaph
 async def gather_otx(client: httpx.AsyncClient, domain: str, sem: asyncio.Semaphore) -> tuple[str, set[str], str]:
     async with sem:
         try:
-            r = await client.get(f"https://otx.alienvault.com/api/v1/indicators/domain/{domain}/passive_dns", timeout=20)
-            r.raise_for_status()
+            r = await source_request(client, f"https://otx.alienvault.com/api/v1/indicators/domain/{domain}/passive_dns", timeout=20)
             data = r.json()
             items = data.get("passive_dns", [])
             hosts = {x.get("hostname", "") for x in items if isinstance(x, dict)}
@@ -161,10 +181,9 @@ async def gather_otx(client: httpx.AsyncClient, domain: str, sem: asyncio.Semaph
 async def gather_wayback(client: httpx.AsyncClient, domain: str, sem: asyncio.Semaphore) -> tuple[str, set[str], str]:
     async with sem:
         try:
-            r = await client.get("https://web.archive.org/cdx/search/cdx", params={
+            r = await source_request(client, "https://web.archive.org/cdx/search/cdx", params={
                 "url": f"*.{domain}/*", "output": "json", "fl": "original", "collapse": "urlkey", "limit": "2000"
             }, timeout=35)
-            r.raise_for_status()
             data = r.json()
             hosts = set()
             for item in data[1:] if isinstance(data, list) else []:
@@ -180,12 +199,18 @@ async def gather_wayback(client: httpx.AsyncClient, domain: str, sem: asyncio.Se
 
 
 async def run_subfinder(domains: list[str]) -> tuple[set[str], str]:
+    """Pass the domain list using Subfinder's documented -dL flag."""
     if not shutil.which("subfinder"):
-        return set(), "not installed (optional)"
+        return set(), "not installed (optional; install Subfinder for wider coverage)"
+    if not domains:
+        return set(), "no wildcard roots"
+    temp_name = None
     try:
-        # No shell invocation and no wildcards passed to the executable.
+        with tempfile.NamedTemporaryFile(mode="w", prefix="scopeforge_domains_", suffix=".txt", delete=False) as tmp:
+            tmp.write("\n".join(domains) + "\n")
+            temp_name = tmp.name
         proc = await asyncio.create_subprocess_exec(
-            "subfinder", "-silent", "-d", ",".join(domains),
+            "subfinder", "-silent", "-dL", temp_name,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
         )
         try:
@@ -194,10 +219,16 @@ async def run_subfinder(domains: list[str]) -> tuple[set[str], str]:
             proc.kill()
             await proc.communicate()
             return set(), "timeout (360 seconds)"
-        result = {line.strip() for line in out.decode("utf-8", "replace").splitlines()}
+        result = {line.strip() for line in out.decode("utf-8", "replace").splitlines() if line.strip()}
         return result, "ok" if proc.returncode == 0 else f"exit {proc.returncode}: {err.decode('utf-8','replace')[-150:]}"
     except Exception as exc:
         return set(), f"{type(exc).__name__}: {str(exc)[:100]}"
+    finally:
+        if temp_name:
+            try:
+                os.unlink(temp_name)
+            except OSError:
+                pass
 
 
 async def discover(scope: Scope, sources: set[str], seeds: Path | None, source_jobs: int) -> tuple[dict[str, set[str]], dict]:
@@ -236,6 +267,15 @@ async def discover(scope: Scope, sources: set[str], seeds: Path | None, source_j
             record_source(found, scope, host, "subfinder")
     for hostname in scope.exact:
         record_source(found, scope, hostname, "explicit_scope")
+    for name in sorted(health):
+        checks = health[name]
+        successes = sum(1 for v in checks.values() if isinstance(v, dict) and v.get("result") == "ok")
+        failures = [(domain, v.get("result")) for domain, v in checks.items()
+                    if isinstance(v, dict) and v.get("result") != "ok"]
+        count = sum(v.get("returned", 0) for v in checks.values() if isinstance(v, dict))
+        print(f"[source:{name}] ok={successes}/{len(checks)} raw_names={count} failures={len(failures)}")
+        for domain, error in failures[:3]:
+            print(f"[source:{name}] {domain}: {error}")
     return found, dict(health)
 
 
@@ -622,7 +662,22 @@ async def execute(args):
     if invalid:
         raise ValueError(f"Unsupported sources: {sorted(invalid)}")
     found, health = await discover(scope, sources, args.seeds, args.source_workers)
+    # Preserve previous discoveries even when a public-source API is temporarily down.
+    # All names are rechecked against scope and actively probed on active runs.
+    previous_discovery = args.out / "discovered.txt"
+    if previous_discovery.is_file():
+        previous_hosts = 0
+        for value in previous_discovery.read_text(encoding="utf-8", errors="replace").splitlines():
+            host = normalize_host(value)
+            if host and scope.includes(host):
+                record_source(found, scope, host, "previous_run")
+                previous_hosts += 1
+        if previous_hosts:
+            print(f"[discovery] merged {previous_hosts} previously discovered hostnames (scope-checked)")
     print(f"[discovery] {len(found)} unique in-scope names collected")
+    if len(found) < max(50, len(scope.wildcards) * 3):
+        print("[WARN] Sparse discovery for this scope. Check results.json -> meta.health for source errors.")
+        print("[WARN] A low discovery count is NOT evidence that other subdomains do not exist.")
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "discovered.txt").write_text("\n".join(sorted(found)) + "\n", encoding="utf-8")
     with (args.out / "discovery_sources.csv").open("w", newline="", encoding="utf-8") as f:
